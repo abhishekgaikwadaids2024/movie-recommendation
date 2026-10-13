@@ -4,6 +4,33 @@ from pathlib import Path
 import streamlit as st
 import pandas as pd
 
+import os
+import pickle
+import urllib.request
+import streamlit as st
+
+MODEL_URL = (
+    "https://github.com/abhishekgaikwadaids2024/"
+    "movie-recommendation/releases/download/v1.0.0/similarity.pkl"
+)
+
+@st.cache_resource
+def load_similarity():
+    model_path = "similarity.pkl"
+
+    if not os.path.exists(model_path):
+        with st.spinner("Downloading recommendation model..."):
+            urllib.request.urlretrieve(MODEL_URL, model_path)
+
+    with open(model_path, "rb") as file:
+        return pickle.load(file)
+
+try:
+    similarity = load_similarity()
+except Exception as e:
+    st.error(f"Could not load recommendation model: {e}")
+    st.stop()
+
 # ---------------------------------------------------------
 # Movie Recommendation System - Streamlit Frontend
 # Keep app.py, movie_list.pkl, and similarity.pkl together.
